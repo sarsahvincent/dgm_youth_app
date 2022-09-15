@@ -91,10 +91,10 @@ const styles = StyleSheet.create({
     fontSize: 24,
     marginBottom: 10,
     fontWeight: 'bold',
-    color: '#63666A',
+    color: 'purple',
   },
   loginInfoText: {
-    color: 'grey',
+    color: 'purple',
     fontSize: 20,
   },
   loginInput: {
