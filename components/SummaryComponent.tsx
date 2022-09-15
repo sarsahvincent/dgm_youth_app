@@ -34,7 +34,8 @@ const styles = StyleSheet.create({
         elevation: 15,
         shadowColor: '#52006A',
         padding: 6,
-        marginHorizontal: 10
+        marginHorizontal: 10,
+        marginBottom: 20,
     },
     value: {
         fontWeight: 'bold',

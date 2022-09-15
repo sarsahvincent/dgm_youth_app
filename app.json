@@ -1,14 +1,14 @@
 {
   "expo": {
-    "name": "forestry_commission_ghana",
-    "slug": "forestry_commission_ghana",
+    "name": "DGM YOUTH",
+    "slug": "Dispensational_Gospel_Mission_Ghana_Youth_Application",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/dgm_logo.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/images/splash.png",
+      "image": "./assets/images/loading.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -23,7 +23,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/dgm_logo.png",
         "backgroundColor": "#ffffff"
       }
     },

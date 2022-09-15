@@ -1,14 +1,22 @@
-import { StyleSheet, Text, View, Image, Pressable } from 'react-native';
+import {
+  Pressable,
+  Text,
+  View,
+  Image,
+  Dimensions,
+  StyleSheet,
+} from 'react-native';
 import React from 'react';
+
 interface Props {
   onPress: () => void;
 }
-
-const DashboardProfileSummary = (props: Props) => {
+const getWidth = Dimensions.get('screen').width;
+const SearchProfileSummary = (props: Props) => {
   return (
     <Pressable onPress={props.onPress}>
       <View style={styles.container}>
-        <View style={styles.textContainer}>
+        <View>
           <Text
             style={{
               fontWeight: '600',
@@ -39,27 +47,6 @@ const DashboardProfileSummary = (props: Props) => {
           >
             Phone : <Text style={{ color: '#ABB0B8' }}>23345678</Text>{' '}
           </Text>
-          <Text
-            style={{
-              fontWeight: '600',
-              marginVertical: 6,
-              color: 'purple',
-              fontSize: 12,
-            }}
-          >
-            Email :{' '}
-            <Text style={{ color: '#ABB0B8' }}>sarsah.vincent@gmail.com</Text>{' '}
-          </Text>
-          <Text
-            style={{
-              fontWeight: '600',
-              marginVertical: 6,
-              color: 'purple',
-              fontSize: 12,
-            }}
-          >
-            Address : <Text style={{ color: '#ABB0B8' }}>26, KWEIKUMA</Text>{' '}
-          </Text>
         </View>
         <View style={styles.profileImageContainer}>
           <Image
@@ -72,16 +59,15 @@ const DashboardProfileSummary = (props: Props) => {
   );
 };
 
-export default DashboardProfileSummary;
+export default SearchProfileSummary;
 
 const styles = StyleSheet.create({
   container: {
     padding: 10,
-    justifyContent: 'center',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     flexDirection: 'row',
-    flex: 1,
-    width: 250,
-    height: 200,
+    height: 120,
     marginTop: 20,
     widthborderRadius: 10,
     shadowOffset: { width: -2, height: 4 },
@@ -92,16 +78,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 10,
     marginHorizontal: 10,
-    marginBottom: 30,
-  },
-  textContainer: {
-    flex: 1,
-    width: '100%',
+    width: getWidth * 0.9,
   },
   profileImageContainer: {
     width: 70,
     height: 70,
-    borderWidth: 3,
+    borderWidth: 2,
     borderColor: 'purple',
     borderRadius: 50,
   },

@@ -7,15 +7,16 @@ import {
 } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as React from 'react';
-import { ColorSchemeName, Pressable } from 'react-native';
-import Colors from '../constants/Colors';
+import { ColorSchemeName } from 'react-native';
 import useColorScheme from '../hooks/useColorScheme';
 import ModalScreen from '../screens/ModalScreen';
 import NotFoundScreen from '../screens/NotFoundScreen';
-import TabTwoScreen from '../screens/TabTwoScreen';
-import WelcomeScreenInfo from '../screens/WelcomeScreen';
+import ProfileScreen from '../screens/ProfileScreen';
 import LoginScreen from '../screens/LoginScreen';
 import HomeScreen from '../screens/HomeScreen';
+import PaymentScreen from '../screens/PaymentScreen';
+import SearchScreen from '../screens/SearchScreen';
+import ViewProfileScreen from '../screens/ViewProfileScreen';
 import {
   RootStackParamList,
   RootTabParamList,
@@ -44,11 +45,6 @@ function RootNavigator() {
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name='Welcome'
-        component={WelcomeScreenInfo}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
         name='Login'
         component={LoginScreen}
         options={{ headerShown: false }}
@@ -59,9 +55,9 @@ function RootNavigator() {
         options={{ headerShown: false }}
       />
       <Stack.Screen
-        name='NotFound'
-        component={NotFoundScreen}
-        options={{ title: 'Oops!' }}
+        name='ViewProfile'
+        component={ViewProfileScreen}
+        options={{ headerShown: false }}
       />
       <Stack.Group screenOptions={{ presentation: 'modal' }}>
         <Stack.Screen name='Modal' component={ModalScreen} />
@@ -95,7 +91,7 @@ function BottomTabNavigator() {
       />
       <BottomTab.Screen
         name='Profile'
-        component={TabTwoScreen}
+        component={ProfileScreen}
         options={{
           headerShown: false,
           title: 'Profile',
@@ -104,19 +100,19 @@ function BottomTabNavigator() {
       />
       <BottomTab.Screen
         name='Search'
-        component={TabTwoScreen}
+        component={SearchScreen}
         options={{
           headerShown: false,
           title: 'Search',
           tabBarIcon: ({ color }) => <TabBarIcon name='search' color={color} />,
         }}
       />
-
       <BottomTab.Screen
         name='Payment'
-        component={TabTwoScreen}
+        component={PaymentScreen}
         options={{
-          title: 'Payment',
+          headerShown: false,
+          title: 'Search',
           tabBarIcon: ({ color }) => <TabBarIcon name='dollar' color={color} />,
         }}
       />

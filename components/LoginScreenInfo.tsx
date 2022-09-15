@@ -5,7 +5,9 @@ import {
   Text,
   TextInput,
   TouchableWithoutFeedback,
+  KeyboardAvoidingView,
   Keyboard,
+  Platform,
 } from 'react-native';
 import React, { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
@@ -18,51 +20,65 @@ const LoginScreenInfo = () => {
     navigation.navigate('Root');
   };
   return (
-    <View style={styles.container}>
-      <ImageBackground
-        source={require('../assets/images/login.png')}
-        resizeMode='cover'
-        style={styles.image}
-      >
-        <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-          <View style={styles.welcomeContainer}>
-            <View style={styles.loginContainer}>
-              <Text style={styles.loginInfoTextHeader}>Sign In</Text>
-              <Text style={styles.loginInfoText}>
-                Please Login to your account
-              </Text>
-            </View>
-            <View style={styles.loginContainer}>
-              <TextInput
-                placeholder='Enter email'
-                keyboardType='email-address'
-                style={styles.loginInput}
-              />
-              <TextInput
-                placeholder='Enter password'
-                keyboardType='default'
-                secureTextEntry
-                style={styles.loginInput}
-              />
-              <View
-                style={{
-                  marginTop: 20,
-                  width: '100%',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <CustomButton
-                  onPress={handleLogin}
-                  title='Login'
-                  loading={loading}
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={styles.container}
+    >
+      <View style={styles.container}>
+        <ImageBackground
+          source={require('../assets/images/login.png')}
+          resizeMode='cover'
+          style={styles.image}
+        >
+          <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+            <View style={styles.welcomeContainer}>
+              <View style={styles.loginContainer}>
+                <Text style={styles.welcomeText}>
+                  WE ARE THE FUTURE HOPE !!!
+                </Text>
+
+                <Text style={styles.loginInfoTextHeader}>Sign In</Text>
+                <Text style={styles.loginInfoText}>
+                  Please Login to your account
+                </Text>
+              </View>
+              <View style={styles.loginContainer}>
+                <TextInput
+                                 placeholderTextColor={'purple'}
+
+                  placeholder='Enter email'
+                  keyboardType='email-address'
+                  style={styles.loginInput}
                 />
+
+                <TextInput
+                 placeholderTextColor={'purple'}
+                  placeholder='Enter password'
+                  keyboardType='default'
+                  secureTextEntry
+                  style={styles.loginInput}
+                />
+
+                <View
+                  style={{
+                    marginTop: 20,
+                    width: '100%',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <CustomButton
+                    onPress={handleLogin}
+                    title='Login'
+                    loading={loading}
+                  />
+                </View>
               </View>
             </View>
-          </View>
-        </TouchableWithoutFeedback>
-      </ImageBackground>
-    </View>
+          </TouchableWithoutFeedback>
+        </ImageBackground>
+      </View>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -103,5 +119,15 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: 'purple',
     marginVertical: 6,
+    fontSize: 12,
+    color: 'purple',
+  },
+
+  welcomeText: {
+    color: 'purple',
+    fontSize: 20,
+    fontWeight: '700',
+    textAlign: 'center',
+    marginBottom: 50
   },
 });

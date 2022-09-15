@@ -1,19 +1,16 @@
 import {
   StyleSheet,
   View,
-  ImageBackground,
   Text,
   FlatList,
   ScrollView,
-  TouchableWithoutFeedback,
-  Keyboard,
+  Image,
 } from 'react-native';
 import React, { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
-import CustomButton from './CustomButton';
-import TopComponent from './TopComponent';
 import SummaryComponent from './SummaryComponent';
 import DashboardProfileSummary from './DashboardProfileSummary';
+import DashboardEventSummary from './DashboardEventSummary';
 import { FontAwesome, Ionicons, MaterialIcons } from '@expo/vector-icons';
 
 const DATA = [
@@ -33,87 +30,113 @@ const DATA = [
 const HomeScreenComponent = () => {
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation();
-  const handleLogin = () => {
-    navigation.navigate('Login');
+  const handleViewProfile = () => {
+    navigation.navigate('ViewProfile');
   };
 
-  const renderItem = () => <DashboardProfileSummary />;
+  const renderDashboardProfileSummaryItem = () => (
+    <DashboardProfileSummary onPress={handleViewProfile} />
+  );
+  const renderDashboardDashboardEventSummaryItem = () => (
+    <DashboardEventSummary />
+  );
   return (
-    <ScrollView style={{ flex: 1, height: '100%', backgroundColor: '#E6EFF8' }}>
-      <View style={styles.container}>
-        <View style={styles.welcomeContainer}>
-          <View style={styles.upperContainer}>
-            <ImageBackground
-              source={require('../assets/images/camp.jpg')}
-              resizeMode='cover'
-              style={styles.image}
-            ></ImageBackground>
-          </View>
-          <View style={styles.dashboardSummaryContainer}>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              <SummaryComponent
-                title='Total Youth'
-                icon={
-                  <FontAwesome
-                    size={30}
-                    style={{ marginBottom: -3 }}
-                    name='users'
-                    color='purple'
-                  />
-                }
-                value='23'
-              />
-              <SummaryComponent
-                title='Total Men'
-                icon={
-                  <Ionicons
-                    size={30}
-                    style={{ marginBottom: -3 }}
-                    name='man'
-                    color='purple'
-                  />
-                }
-                value='23'
-              />
-              <SummaryComponent
-                title='Total Women'
-                icon={
-                  <Ionicons
-                    size={30}
-                    style={{ marginBottom: -3 }}
-                    name='woman'
-                    color='purple'
-                  />
-                }
-                value='23'
-              />
-              <SummaryComponent
-                title='New Convert'
-                icon={
-                  <MaterialIcons
-                    size={30}
-                    style={{ marginBottom: -3 }}
-                    name='group-add'
-                    color='purple'
-                  />
-                }
-                value='23'
-              />
-            </ScrollView>
-          </View>
-        </View>
-
-        <View style={{ flex: 1, width: '100%', paddingVertical: 20 }}>
-          <FlatList
-            showsHorizontalScrollIndicator={false}
-            horizontal
-            data={DATA}
-            renderItem={renderItem}
-            keyExtractor={(item) => item.id}
-          />
-        </View>
+    <>
+      <View style={styles.upperContainer}>
+        <Image
+          source={require('../assets/images/camp.jpg')}
+          resizeMode='stretch'
+          style={styles.image}
+        />
       </View>
-    </ScrollView>
+
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        style={{ flex: 1, height: '100%', backgroundColor: '#E6EFF8' }}
+      >
+        <View style={styles.container}>
+          <View style={styles.welcomeContainer}>
+            <View style={styles.dashboardSummaryContainer}>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                <SummaryComponent
+                  title='Total Youth'
+                  icon={
+                    <FontAwesome
+                      size={30}
+                      style={{ marginBottom: -3 }}
+                      name='users'
+                      color='purple'
+                    />
+                  }
+                  value='23'
+                />
+                <SummaryComponent
+                  title='Total Men'
+                  icon={
+                    <Ionicons
+                      size={30}
+                      style={{ marginBottom: -3 }}
+                      name='man'
+                      color='purple'
+                    />
+                  }
+                  value='23'
+                />
+                <SummaryComponent
+                  title='Total Women'
+                  icon={
+                    <Ionicons
+                      size={30}
+                      style={{ marginBottom: -3 }}
+                      name='woman'
+                      color='purple'
+                    />
+                  }
+                  value='23'
+                />
+                <SummaryComponent
+                  title='New Convert'
+                  icon={
+                    <MaterialIcons
+                      size={30}
+                      style={{ marginBottom: -3 }}
+                      name='group-add'
+                      color='purple'
+                    />
+                  }
+                  value='23'
+                />
+              </ScrollView>
+            </View>
+          </View>
+
+          <View style={{ flex: 1, width: '100%', marginTop: 10 }}>
+            <Text style={{ fontSize: 16, color: 'purple', fontWeight: '600' }}>
+              Members
+            </Text>
+            <FlatList
+              showsHorizontalScrollIndicator={false}
+              horizontal
+              data={DATA}
+              renderItem={renderDashboardProfileSummaryItem}
+              keyExtractor={(item) => item.id}
+            />
+          </View>
+          <View style={{ flex: 1, width: '100%', marginBottom: 20 }}>
+            <Text style={{ fontSize: 16, color: 'purple', fontWeight: '600' }}>
+              Events
+            </Text>
+            <FlatList
+              showsHorizontalScrollIndicator={false}
+              horizontal
+              data={DATA}
+              renderItem={renderDashboardDashboardEventSummaryItem}
+              keyExtractor={(item) => item.id}
+            />
+          </View>
+        </View>
+      </ScrollView>
+    </>
   );
 };
 
@@ -128,8 +151,7 @@ const styles = StyleSheet.create({
   },
   image: {
     flex: 1,
-    width: '100%',
-    height: 200,
+    width: 'auto',
     borderRadius: 10,
   },
   welcomeContainer: {
@@ -145,12 +167,12 @@ const styles = StyleSheet.create({
   },
 
   upperContainer: {
-    marginBottom: 30,
-    height: 200,
+    height: '35%',
     borderRadius: 10,
     marginTop: 35,
-    padding: 10,
+    padding: 2,
     width: '100%',
+    backgroundColor: '#E6EFF8',
   },
   dashboardSummaryContainer: {},
   text: {
