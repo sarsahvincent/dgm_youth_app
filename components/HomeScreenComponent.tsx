@@ -1,3 +1,4 @@
+import React, { useState, useContext, useEffect } from 'react';
 import {
   StyleSheet,
   View,
@@ -5,41 +6,171 @@ import {
   FlatList,
   ScrollView,
   Image,
+  ActivityIndicator,
 } from 'react-native';
-import React, { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import SummaryComponent from './SummaryComponent';
 import DashboardProfileSummary from './DashboardProfileSummary';
 import DashboardEventSummary from './DashboardEventSummary';
+import DashboardDepartmentSummary from './DashboardDepartmentSummary';
 import { FontAwesome, Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { getDocs, collection, doc, getDoc } from 'firebase/firestore';
+import { UserContext } from '../context/AuthContext';
+import { db } from '../firebase';
 
-const DATA = [
-  {
-    id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
-    title: 'First Item',
-  },
-  {
-    id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
-    title: 'Second Item',
-  },
-  {
-    id: '58694a0f-3da1-471f-bd96-145571e29d72',
-    title: 'Third Item',
-  },
-];
+const Item = ({ title }: { title: string }) => (
+  <View>
+    <Text>{title}</Text>
+  </View>
+);
 const HomeScreenComponent = () => {
-  const [loading, setLoading] = useState(false);
-  const navigation = useNavigation();
-  const handleViewProfile = () => {
-    navigation.navigate('ViewProfile');
+  const {
+    loading,
+    setLoading,
+    allUsers,
+    setAllUsers,
+    allDepartment,
+    setAllDepartment,
+    settAllActivity,
+    allActivity,
+    uid,
+    setGetUserDetails,
+  } = useContext(UserContext);
+  const [men, setMen] = useState([]);
+  const [womem, setWomen] = useState<any>([]);
+  const [newConvert, setNewConvert] = useState([]);
+  const navigation = useNavigation<any>();
+
+  let totalYouth = men + womem;
+  let numberOfMen: any = [];
+  let numberOfWomen: any = [];
+  let numberOfNewConvert: any = [];
+  const activitiesCollectiion = collection(db, 'DGM_YOUTH_Activities');
+  const usersCollectiion = collection(db, 'DGM_YOUTH_users');
+
+  const deparmentCollectiion = collection(db, 'DGM_YOUTH_Departments');
+  const getAllMen = () => {
+    const findMan = allUsers?.filter((user: any) => user.sex === 'Male');
+    if (findMan) {
+      numberOfMen.push(findMan);
+    }
+  };
+  const getAllWomen = () => {
+    const findWoman = allUsers?.filter((user: any) => user.sex === 'Female');
+    if (findWoman) {
+      numberOfWomen.push(findWoman);
+    }
   };
 
-  const renderDashboardProfileSummaryItem = () => (
-    <DashboardProfileSummary onPress={handleViewProfile} />
+  const getAllNewConvert = () => {
+    const findNewConvert = allUsers?.filter(
+      (user: any) => user.membershipStatus === 'New Convert'
+    );
+    if (findNewConvert) {
+      numberOfNewConvert.push(findNewConvert);
+    }
+  };
+
+  useEffect(() => {
+    const getAllDepartment = async () => {
+      setLoading(true);
+      try {
+        const data: any = await getDocs(deparmentCollectiion);
+        setAllDepartment(
+          data.docs.map((doc: any) => ({ ...doc.data(), id: doc.id }))
+        );
+        setLoading(false);
+      } catch (e) {
+        setLoading(false);
+      }
+    };
+
+    getAllDepartment();
+  }, []);
+
+  useEffect(() => {
+    const getUsers = async () => {
+      setLoading(true);
+      try {
+        setLoading(true);
+        const data = await getDocs(usersCollectiion);
+        setAllUsers(data?.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+        setLoading(false);
+      } catch (e) {
+        setLoading(false);
+      }
+    };
+
+    const getActiviteis = async () => {
+      try {
+        setLoading(true);
+        const data = await getDocs(activitiesCollectiion);
+        settAllActivity(
+          data?.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
+        );
+        setLoading(false);
+      } catch (e) {
+        setLoading(false);
+      }
+    };
+
+    getActiviteis();
+    getUsers();
+  }, []);
+
+  useEffect(() => {
+    getDoc(doc(db, 'DGM_YOUTH_users', uid)).then((docSnap) => {
+      setGetUserDetails(docSnap.data());
+    });
+  }, []);
+
+  useEffect(() => {
+    getAllWomen();
+    setWomen(numberOfWomen[0].length);
+    getAllMen();
+    setMen(numberOfMen[0].length);
+    getAllNewConvert();
+    setNewConvert(numberOfNewConvert[0].length);
+  }, [allUsers]);
+
+  const handleViewProfile = (props: any) => {
+
+    navigation.navigate('ViewProfile', {
+      info: props,
+    });
+  };
+  const renderDashboardProfileSummaryItem = ({ item }: { item: any }) => (
+    <DashboardProfileSummary
+      onPress={() => {
+        handleViewProfile(item);
+      }}
+      photo={item.avatar}
+      name={item?.fullName}
+      sex={item?.sex}
+      phone={item?.phone}
+      email={item?.email}
+      address={item?.address}
+    />
   );
-  const renderDashboardDashboardEventSummaryItem = () => (
-    <DashboardEventSummary />
+  const renderDashboardDashboardEventSummaryItem = ({
+    item,
+  }: {
+    item: any;
+  }) => (
+    <DashboardEventSummary
+      title={item.title}
+      total={item.total}
+      status={item.status}
+    />
   );
+  const renderDashboardDepartmentSummaryItem = ({ item }: { item: any }) => (
+    <DashboardDepartmentSummary
+      name={item.departmentName}
+      assistant={item.gropAssitant}
+      leader={item.groupLeaderName}
+    />
+  );
+
   return (
     <>
       <View style={styles.upperContainer}>
@@ -49,93 +180,117 @@ const HomeScreenComponent = () => {
           style={styles.image}
         />
       </View>
+      {loading ? (
+        <View style={{ flex: 1, height: '100%' }}>
+          <ActivityIndicator size='large' color='purple' />
+        </View>
+      ) : (
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          style={{ flex: 1, height: '100%', backgroundColor: '#E6EFF8' }}
+        >
+          <View style={styles.container}>
+            <View style={styles.welcomeContainer}>
+              <View style={styles.dashboardSummaryContainer}>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                  <SummaryComponent
+                    title='Total Youth'
+                    icon={
+                      <FontAwesome
+                        size={30}
+                        style={{ marginBottom: -3 }}
+                        name='users'
+                        color='purple'
+                      />
+                    }
+                    value={totalYouth}
+                  />
+                  <SummaryComponent
+                    title='Total Men'
+                    icon={
+                      <Ionicons
+                        size={30}
+                        style={{ marginBottom: -3 }}
+                        name='man'
+                        color='purple'
+                      />
+                    }
+                    value={men}
+                  />
+                  <SummaryComponent
+                    title='Total Women'
+                    icon={
+                      <Ionicons
+                        size={30}
+                        style={{ marginBottom: -3 }}
+                        name='woman'
+                        color='purple'
+                      />
+                    }
+                    value={womem}
+                  />
+                  <SummaryComponent
+                    title='New Convert'
+                    icon={
+                      <MaterialIcons
+                        size={30}
+                        style={{ marginBottom: -3 }}
+                        name='group-add'
+                        color='purple'
+                      />
+                    }
+                    value={newConvert}
+                  />
+                </ScrollView>
+              </View>
+            </View>
+            <View style={{ flex: 1, width: '100%', marginTop: 10 }}>
+              <Text
+                style={{ fontSize: 16, color: 'purple', fontWeight: '600' }}
+              >
+                Departments
+              </Text>
+              <FlatList
+                showsHorizontalScrollIndicator={false}
+                horizontal
+                data={allDepartment}
+                renderItem={renderDashboardDepartmentSummaryItem}
+                keyExtractor={(item) => item.id}
+              />
+            </View>
 
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        style={{ flex: 1, height: '100%', backgroundColor: '#E6EFF8' }}
-      >
-        <View style={styles.container}>
-          <View style={styles.welcomeContainer}>
-            <View style={styles.dashboardSummaryContainer}>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                <SummaryComponent
-                  title='Total Youth'
-                  icon={
-                    <FontAwesome
-                      size={30}
-                      style={{ marginBottom: -3 }}
-                      name='users'
-                      color='purple'
-                    />
-                  }
-                  value='23'
-                />
-                <SummaryComponent
-                  title='Total Men'
-                  icon={
-                    <Ionicons
-                      size={30}
-                      style={{ marginBottom: -3 }}
-                      name='man'
-                      color='purple'
-                    />
-                  }
-                  value='23'
-                />
-                <SummaryComponent
-                  title='Total Women'
-                  icon={
-                    <Ionicons
-                      size={30}
-                      style={{ marginBottom: -3 }}
-                      name='woman'
-                      color='purple'
-                    />
-                  }
-                  value='23'
-                />
-                <SummaryComponent
-                  title='New Convert'
-                  icon={
-                    <MaterialIcons
-                      size={30}
-                      style={{ marginBottom: -3 }}
-                      name='group-add'
-                      color='purple'
-                    />
-                  }
-                  value='23'
-                />
-              </ScrollView>
+            <View style={{ flex: 1, width: '100%', marginTop: 10 }}>
+              <Text
+                style={{ fontSize: 16, color: 'purple', fontWeight: '600' }}
+              >
+                Members
+              </Text>
+              <FlatList
+                showsHorizontalScrollIndicator={false}
+                horizontal
+                data={allUsers}
+                renderItem={renderDashboardProfileSummaryItem}
+                keyExtractor={(item) => item.uid}
+              />
+            </View>
+
+            <View style={{ flex: 1, width: '100%', marginBottom: 20 }}>
+              <Text
+                style={{ fontSize: 16, color: 'purple', fontWeight: '600' }}
+              >
+                Events
+              </Text>
+              <FlatList
+                showsHorizontalScrollIndicator={false}
+                horizontal
+                data={allActivity}
+                renderItem={renderDashboardDashboardEventSummaryItem}
+                keyExtractor={(item) => item.id}
+              />
             </View>
           </View>
-
-          <View style={{ flex: 1, width: '100%', marginTop: 10 }}>
-            <Text style={{ fontSize: 16, color: 'purple', fontWeight: '600' }}>
-              Members
-            </Text>
-            <FlatList
-              showsHorizontalScrollIndicator={false}
-              horizontal
-              data={DATA}
-              renderItem={renderDashboardProfileSummaryItem}
-              keyExtractor={(item) => item.id}
-            />
-          </View>
-          <View style={{ flex: 1, width: '100%', marginBottom: 20 }}>
-            <Text style={{ fontSize: 16, color: 'purple', fontWeight: '600' }}>
-              Events
-            </Text>
-            <FlatList
-              showsHorizontalScrollIndicator={false}
-              horizontal
-              data={DATA}
-              renderItem={renderDashboardDashboardEventSummaryItem}
-              keyExtractor={(item) => item.id}
-            />
-          </View>
-        </View>
-      </ScrollView>
+        </ScrollView>
+      )}
     </>
   );
 };
@@ -178,5 +333,9 @@ const styles = StyleSheet.create({
   text: {
     color: 'white',
     fontSize: 18,
+  },
+  lottie: {
+    width: 100,
+    height: 100,
   },
 });

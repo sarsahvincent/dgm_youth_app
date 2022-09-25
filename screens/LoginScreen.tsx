@@ -5,9 +5,7 @@ import { View } from '../components/Themed';
 export default function LoginScreen() {
   return (
     <View style={styles.container}>
-
       <LoginScreenInfo />
-
     </View>
   );
 }

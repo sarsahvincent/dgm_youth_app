@@ -1,6 +1,7 @@
+import React, { useContext, useEffect, useState } from 'react';
 import {
-  StyleSheet,
   Text,
+  StyleSheet,
   TextInput,
   View,
   TouchableWithoutFeedback,
@@ -8,67 +9,74 @@ import {
   FlatList,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import React from 'react';
 import { FontAwesome } from '@expo/vector-icons';
 import SearchProfileSummary from './SearchProfileSummary';
-
-const DATA = [
-  {
-    id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
-    title: 'First Item',
-  },
-  {
-    id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
-    title: 'Second Item',
-  },
-  {
-    id: '58694a0f-3da1-471f-bd96-145571e29d72',
-    title: 'Third Item',
-  },
-  {
-    id: '58694a0f-3da1-471f-bd96-145571ed72',
-    title: 'Third Item',
-  },
-  {
-    id: '58694a0f-3da1-471f-bd96-145571e29d',
-    title: 'Third Item',
-  },
-  {
-    id: '58694a0f-3da1-471f-bd96-145571e29d722',
-    title: 'Third Item',
-  },
-  {
-    id: '58694a0f-3da1-471f-bd96-145571e29d721',
-    title: 'Third Item',
-  },
-];
+import { UserContext } from '../context/AuthContext';
 
 export default function SearchComponent() {
-  const navigation = useNavigation();
-  const handleViewProfile = () => {
-    navigation.navigate('ViewProfile');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchReults] = useState([]);
+
+  const { allUsers } = useContext(UserContext);
+  const navigation = useNavigation<any>();
+  const handleViewProfile = (props: any) => {
+    navigation.navigate('ViewProfile', {
+      info: props,
+    });
   };
-  const renderItems = () => (
-    <SearchProfileSummary onPress={handleViewProfile} />
+  const renderItems = ({ item }: { item: any }) => (
+    <SearchProfileSummary
+      name={item.fullName}
+      role={item.role}
+      phone={item.phone}
+      photo={item.avatar}
+      onPress={() => {
+        handleViewProfile(item);
+      }}
+    />
   );
+
+  useEffect(() => {
+    const filteredData = allUsers?.filter(
+      (user: any) =>
+        user?.fullName?.toLowerCase()?.includes(searchTerm?.toLowerCase()) ||
+        user?.firstName?.toLowerCase()?.includes(searchTerm?.toLowerCase()) ||
+        user?.lastName?.toLowerCase()?.includes(searchTerm?.toLowerCase()) ||
+        user?.phone?.toLowerCase()?.includes(searchTerm?.toLowerCase()) ||
+        user?.email?.toLowerCase()?.includes(searchTerm?.toLowerCase()) ||
+        user?.sex?.toLowerCase()?.includes(searchTerm?.toLowerCase())
+    );
+
+    setSearchReults(filteredData);
+  }, [searchTerm, allUsers]);
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View style={styles.container}>
         <View style={styles.searchContainer}>
           <TextInput
+            value={searchTerm}
+            onChangeText={(newText) => setSearchTerm(newText)}
             style={styles.searchInput}
             placeholderTextColor='purple'
             placeholder='Search by keyword'
           />
-          <FontAwesome size={30} name='search' color='purple' />
+          <FontAwesome size={24} name='search' color='purple' />
         </View>
-        <FlatList
-          showsVerticalScrollIndicator={false}
-          data={DATA}
-          renderItem={renderItems}
-          keyExtractor={(item) => item.id}
-        />
+        {searchResults.length === 0 ? (
+          <View style={{ marginTop: 20 }}>
+            <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
+              No data found !
+            </Text>
+          </View>
+        ) : (
+          <FlatList
+            showsVerticalScrollIndicator={false}
+            data={searchResults}
+            renderItem={renderItems}
+            keyExtractor={(item) => item.id}
+          />
+        )}
       </View>
     </TouchableWithoutFeedback>
   );
@@ -98,5 +106,6 @@ const styles = StyleSheet.create({
     borderColor: 'red',
     textAlign: 'center',
     borderRadius: 15,
+    justifyContent: 'center',
   },
 });

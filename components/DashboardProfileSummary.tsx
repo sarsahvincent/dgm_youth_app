@@ -2,6 +2,12 @@ import { StyleSheet, Text, View, Image, Pressable } from 'react-native';
 import React from 'react';
 interface Props {
   onPress: () => void;
+  photo: boolean;
+  name: string;
+  sex: string;
+  phone: string;
+  email: string;
+  address: string;
 }
 
 const DashboardProfileSummary = (props: Props) => {
@@ -10,6 +16,8 @@ const DashboardProfileSummary = (props: Props) => {
       <View style={styles.container}>
         <View style={styles.textContainer}>
           <Text
+            numberOfLines={1}
+            ellipsizeMode='tail'
             style={{
               fontWeight: '600',
               marginVertical: 6,
@@ -17,54 +25,59 @@ const DashboardProfileSummary = (props: Props) => {
               fontSize: 16,
             }}
           >
-            Vincent Sarsah
+            {props.name}
+          </Text>
+          <Text
+            numberOfLines={1}
+            ellipsizeMode='tail'
+            style={{
+              fontWeight: '600',
+              marginVertical: 6,
+              color: 'purple',
+              fontSize: 14,
+            }}
+          >
+            Sex : <Text style={{ color: '#ABB0B8' }}>{props.sex}</Text>{' '}
           </Text>
           <Text
             style={{
               fontWeight: '600',
               marginVertical: 6,
               color: 'purple',
-              fontSize: 16,
+              fontSize: 14,
             }}
           >
-            Role : <Text style={{ color: '#ABB0B8' }}>President</Text>{' '}
+            Phone : <Text style={{ color: '#ABB0B8' }}>{props.phone}</Text>{' '}
           </Text>
           <Text
+            numberOfLines={1}
+            ellipsizeMode='tail'
             style={{
               fontWeight: '600',
               marginVertical: 6,
               color: 'purple',
-              fontSize: 16,
+              fontSize: 14,
             }}
           >
-            Phone : <Text style={{ color: '#ABB0B8' }}>23345678</Text>{' '}
+            Email :<Text style={{ color: '#ABB0B8' }}>{props.email}</Text>
           </Text>
           <Text
+            numberOfLines={1}
+            ellipsizeMode='tail'
             style={{
               fontWeight: '600',
               marginVertical: 6,
               color: 'purple',
-              fontSize: 12,
+              fontSize: 14,
             }}
           >
-            Email :{' '}
-            <Text style={{ color: '#ABB0B8' }}>sarsah.vincent@gmail.com</Text>{' '}
-          </Text>
-          <Text
-            style={{
-              fontWeight: '600',
-              marginVertical: 6,
-              color: 'purple',
-              fontSize: 12,
-            }}
-          >
-            Address : <Text style={{ color: '#ABB0B8' }}>26, KWEIKUMA</Text>{' '}
+            Address : <Text style={{ color: '#ABB0B8' }}>{props.address}</Text>
           </Text>
         </View>
         <View style={styles.profileImageContainer}>
           <Image
             style={{ width: '100%', height: '100%', borderRadius: 50 }}
-            source={require('../assets/images/contact2.jpg')}
+            source={{ uri: `${props.photo}` }}
           />
         </View>
       </View>
@@ -80,8 +93,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexDirection: 'row',
     flex: 1,
-    width: 250,
-    height: 200,
+    width: 300,
+    height: 190,
     marginTop: 20,
     widthborderRadius: 10,
     shadowOffset: { width: -2, height: 4 },

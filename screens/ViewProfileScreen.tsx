@@ -1,12 +1,14 @@
 import { StyleSheet } from 'react-native';
 
-import ProfileComponent from '../components/ProfileComponent';
-import { Text, View } from '../components/Themed';
+import ViewProfileComponent from '../components/ViewProfileComponent';
+import { View } from '../components/Themed';
 
-export default function ViewProfileScreen() {
+export default function ViewProfileScreen({ route }: { route: any }) {
+  const { info } = route.params;
+
   return (
     <View style={styles.container}>
-      <ProfileComponent />
+      <ViewProfileComponent data={info} />
     </View>
   );
 }

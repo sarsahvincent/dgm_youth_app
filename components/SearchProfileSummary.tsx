@@ -7,9 +7,14 @@ import {
   StyleSheet,
 } from 'react-native';
 import React from 'react';
+import { getUserRole } from '../utils/Role';
 
 interface Props {
-  onPress: () => void;
+  onPress?: (item: any) => void;
+  name: string;
+  phone: string;
+  role: string;
+  photo: string;
 }
 const getWidth = Dimensions.get('screen').width;
 const SearchProfileSummary = (props: Props) => {
@@ -18,40 +23,43 @@ const SearchProfileSummary = (props: Props) => {
       <View style={styles.container}>
         <View>
           <Text
+            numberOfLines={1}
+            ellipsizeMode='tail'
             style={{
               fontWeight: '600',
               marginVertical: 6,
               color: 'purple',
-              fontSize: 16,
+              fontSize:14,
             }}
           >
-            Vincent Sarsah
+            {props.name}
           </Text>
           <Text
             style={{
               fontWeight: '600',
               marginVertical: 6,
               color: 'purple',
-              fontSize: 16,
+              fontSize:14,
             }}
           >
-            Role : <Text style={{ color: '#ABB0B8' }}>President</Text>{' '}
+            Role :{' '}
+            <Text style={{ color: '#ABB0B8' }}> {getUserRole(props.role)}</Text>{' '}
           </Text>
           <Text
             style={{
               fontWeight: '600',
               marginVertical: 6,
               color: 'purple',
-              fontSize: 16,
+              fontSize:14,
             }}
           >
-            Phone : <Text style={{ color: '#ABB0B8' }}>23345678</Text>{' '}
+            Phone : <Text style={{ color: '#ABB0B8' }}>{props.phone}</Text>{' '}
           </Text>
         </View>
         <View style={styles.profileImageContainer}>
           <Image
             style={{ width: '100%', height: '100%', borderRadius: 50 }}
-            source={require('../assets/images/contact2.jpg')}
+            source={{ uri: `${props.photo}` }}
           />
         </View>
       </View>
@@ -79,6 +87,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginHorizontal: 10,
     width: getWidth * 0.9,
+    marginBottom: 10
   },
   profileImageContainer: {
     width: 70,

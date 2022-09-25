@@ -10,7 +10,6 @@ import * as React from 'react';
 import { ColorSchemeName } from 'react-native';
 import useColorScheme from '../hooks/useColorScheme';
 import ModalScreen from '../screens/ModalScreen';
-import NotFoundScreen from '../screens/NotFoundScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import LoginScreen from '../screens/LoginScreen';
 import HomeScreen from '../screens/HomeScreen';
@@ -23,20 +22,34 @@ import {
   RootTabScreenProps,
 } from '../types';
 import LinkingConfiguration from './LinkingConfiguration';
+import { UserContext } from '../context/AuthContext';
 
 export default function Navigation({
   colorScheme,
 }: {
   colorScheme: ColorSchemeName;
 }) {
-  return (
-    <NavigationContainer
-      linking={LinkingConfiguration}
-      theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
-    >
-      <RootNavigator />
-    </NavigationContainer>
-  );
+  let { uid } = React.useContext(UserContext);
+
+  if (uid) {
+    return (
+      <NavigationContainer
+        linking={LinkingConfiguration}
+        theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
+      >
+        <RootNavigator />
+      </NavigationContainer>
+    );
+  } else {
+    return (
+      <NavigationContainer
+        linking={LinkingConfiguration}
+        theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
+      >
+        <LoginScreen />
+      </NavigationContainer>
+    );
+  }
 }
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -44,11 +57,6 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 function RootNavigator() {
   return (
     <Stack.Navigator>
-      <Stack.Screen
-        name='Login'
-        component={LoginScreen}
-        options={{ headerShown: false }}
-      />
       <Stack.Screen
         name='Root'
         component={BottomTabNavigator}

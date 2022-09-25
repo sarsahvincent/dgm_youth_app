@@ -19,7 +19,11 @@ const ProfileDetails = (props: Props) => {
       <Text style={{ fontWeight: '600', fontSize: 18, color: 'purple' }}>
         {props.title}
       </Text>
-      <Text style={{ fontWeight: '400', fontSize: 16, color: '#63666A' }}>
+      <Text
+        numberOfLines={1}
+        ellipsizeMode='tail'
+        style={{ fontWeight: '400', fontSize: 16, color: '#63666A' }}
+      >
         {props.value}
       </Text>
     </View>

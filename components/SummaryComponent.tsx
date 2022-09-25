@@ -5,7 +5,7 @@ import { FontAwesome } from '@expo/vector-icons'
 interface Props {
     title: string;
     icon: any;
-    value: string;
+    value: any;
 }
 
 const SummaryComponent = (props: Props) => {

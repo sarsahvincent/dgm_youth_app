@@ -1,39 +1,53 @@
 import { StyleSheet, Text, View, Image } from 'react-native';
 import React from 'react';
 
-const DashboardProfileSummary = () => {
+const DashboardProfileSummary = (props: {
+  title: string;
+  total: string;
+  status: string;
+}) => {
+  const getColor = (status: string) => {
+    if (status === 'approved') return 'blue';
+    else if (status === 'executed') return 'green';
+    else return 'red';
+  };
   return (
     <View style={styles.container}>
       <View style={styles.textContainer}>
         <Text
+          numberOfLines={1}
+          ellipsizeMode='tail'
           style={{
             fontWeight: '600',
             marginVertical: 6,
             color: 'purple',
-            fontSize: 16,
+            fontSize: 14,
           }}
         >
-      Vals Day
+          {props.title}
         </Text>
         <Text
           style={{
             fontWeight: '600',
             marginVertical: 6,
             color: 'purple',
-            fontSize: 16,
+            fontSize: 14,
           }}
         >
-          Total Cost: $: <Text style={{ color: '#ABB0B8' }}>234.90</Text>{' '}
+          Total Cost: ¢: <Text style={{ color: '#ABB0B8' }}>{props.total}</Text>
         </Text>
         <Text
           style={{
             fontWeight: '600',
             marginVertical: 6,
             color: 'purple',
-            fontSize: 16,
+            fontSize: 14,
           }}
         >
-          Status : <Text style={{ color: '#ABB0B8' }}>Pending</Text>{' '}
+          Status :{' '}
+          <Text style={{ color: getColor(props.status) }}>
+            {props.status.charAt(0).toUpperCase() + props.status.slice(1)}
+          </Text>
         </Text>
       </View>
     </View>

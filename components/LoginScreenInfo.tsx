@@ -8,17 +8,91 @@ import {
   KeyboardAvoidingView,
   Keyboard,
   Platform,
+  Alert,
 } from 'react-native';
-import React, { useState } from 'react';
-import { useNavigation } from '@react-navigation/native';
+import React, { useState, useContext } from 'react';
 import CustomButton from './CustomButton';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../firebase';
+import { UserContext } from '../context/AuthContext';
 
 const LoginScreenInfo = () => {
+  const { setUid } = useContext(UserContext);
   const [loading, setLoading] = useState(false);
-  const navigation = useNavigation();
-  const handleLogin = () => {
-    navigation.navigate('Root');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleSubmit = async () => {
+    if (!email || !password) {
+      Alert.alert('Allert', 'All fields are required.', [
+        {
+          text: 'Cancel',
+
+          style: 'cancel',
+        },
+        { text: 'OK' },
+      ]);
+    } else {
+      try {
+        setLoading(true);
+        const result = await signInWithEmailAndPassword(auth, email, password);
+        setUid(result?.user?.uid);
+        setPassword('');
+        setEmail('');
+        setLoading(false);
+      } catch (err: any) {
+        setLoading(false);
+        if (
+          err.message === 'Firebase: Error (auth/user-not-found).' ||
+          err.message === 'Firebase: Error (auth/wrong-password).'
+        ) {
+          Alert.alert('Error', 'Invalid Email or Password', [
+            {
+              text: 'Cancel',
+
+              style: 'cancel',
+            },
+            { text: 'OK' },
+          ]);
+        } else if (err.message === 'Firebase: Error (auth/timeout).') {
+          Alert.alert('Error', 'Network  error! Please try again', [
+            {
+              text: 'Cancel',
+
+              style: 'cancel',
+            },
+            { text: 'OK' },
+          ]);
+        } else if (
+          err.message ===
+          'Firebase: Access to this account has been temporarily disabled due to many failed login attempts. You can immediately restore it by resetting your password or you can try again later. (auth/too-many-requests).'
+        ) {
+          Alert.alert(
+            'Error',
+            'Your Account has been temporarily disabled due to many failed login attempts. You can immediately restore it by resetting your password or you can try again later',
+            [
+              {
+                text: 'Cancel',
+
+                style: 'cancel',
+              },
+              { text: 'OK' },
+            ]
+          );
+        } else {
+          Alert.alert('Error', err.message, [
+            {
+              text: 'Cancel',
+
+              style: 'cancel',
+            },
+            { text: 'OK' },
+          ]);
+        }
+      }
+    }
   };
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -44,15 +118,17 @@ const LoginScreenInfo = () => {
               </View>
               <View style={styles.loginContainer}>
                 <TextInput
-                                 placeholderTextColor={'purple'}
-
+                  value={email}
+                  placeholderTextColor={'purple'}
                   placeholder='Enter email'
                   keyboardType='email-address'
                   style={styles.loginInput}
+                  onChangeText={setEmail}
                 />
 
                 <TextInput
-                 placeholderTextColor={'purple'}
+                  onChangeText={setPassword}
+                  placeholderTextColor={'purple'}
                   placeholder='Enter password'
                   keyboardType='default'
                   secureTextEntry
@@ -68,7 +144,7 @@ const LoginScreenInfo = () => {
                   }}
                 >
                   <CustomButton
-                    onPress={handleLogin}
+                    onPress={handleSubmit}
                     title='Login'
                     loading={loading}
                   />
@@ -128,6 +204,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '700',
     textAlign: 'center',
-    marginBottom: 50
+    marginBottom: 50,
   },
 });
