@@ -35,11 +35,13 @@ const HomeScreenComponent = () => {
     allActivity,
     uid,
     setGetUserDetails,
+    setViewDetails,
   } = useContext(UserContext);
   const [men, setMen] = useState([]);
   const [womem, setWomen] = useState<any>([]);
   const [newConvert, setNewConvert] = useState([]);
   const navigation = useNavigation<any>();
+  const [image, setImage] = useState<any>();
 
   let totalYouth = men + womem;
   let numberOfMen: any = [];
@@ -47,7 +49,7 @@ const HomeScreenComponent = () => {
   let numberOfNewConvert: any = [];
   const activitiesCollectiion = collection(db, 'DGM_YOUTH_Activities');
   const usersCollectiion = collection(db, 'DGM_YOUTH_users');
-
+  const eventImage = collection(db, 'DGM_YOUTH_program_image');
   const deparmentCollectiion = collection(db, 'DGM_YOUTH_Departments');
   const getAllMen = () => {
     const findMan = allUsers?.filter((user: any) => user.sex === 'Male');
@@ -125,6 +127,17 @@ const HomeScreenComponent = () => {
   }, []);
 
   useEffect(() => {
+    setLoading(true);
+    const getProgramImage = async () => {
+      const data = await getDocs(eventImage);
+      setImage(data.docs.map((doc: any) => ({ ...doc.data(), id: doc.id })));
+    };
+
+    setLoading(false);
+    getProgramImage();
+  }, []);
+
+  useEffect(() => {
     getAllWomen();
     setWomen(numberOfWomen[0].length);
     getAllMen();
@@ -134,10 +147,8 @@ const HomeScreenComponent = () => {
   }, [allUsers]);
 
   const handleViewProfile = (props: any) => {
-
-    navigation.navigate('ViewProfile', {
-      info: props,
-    });
+    setViewDetails(props);
+    navigation.navigate('ViewProfile');
   };
   const renderDashboardProfileSummaryItem = ({ item }: { item: any }) => (
     <DashboardProfileSummary
@@ -175,7 +186,11 @@ const HomeScreenComponent = () => {
     <>
       <View style={styles.upperContainer}>
         <Image
-          source={require('../assets/images/camp.jpg')}
+          source={
+            image
+              ? { uri: `${image[0]?.image}` }
+              : require('../assets/images/total-verses-in-the-bible.jpg')
+          }
           resizeMode='stretch'
           style={styles.image}
         />

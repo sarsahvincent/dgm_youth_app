@@ -10,11 +10,13 @@ export const UserProvider = ({ children }: any) => {
   const [getUserDetails, setGetUserDetails] = useState<any>();
   const [allActivity, settAllActivity] = useState<any>([]);
   const [uid, setUid] = useState(null);
+  const [viewDetails, setViewDetails] = useState<any>({});
 
-  console.log('getUserDetails', getUserDetails);
   let contextData = {
     uid,
     loading,
+    viewDetails,
+    setViewDetails,
     setLoading,
     setUid,
     allUsers,

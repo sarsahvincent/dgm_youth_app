@@ -17,12 +17,11 @@ export default function SearchComponent() {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchReults] = useState([]);
 
-  const { allUsers } = useContext(UserContext);
+  const { allUsers, setViewDetails } = useContext(UserContext);
   const navigation = useNavigation<any>();
   const handleViewProfile = (props: any) => {
-    navigation.navigate('ViewProfile', {
-      info: props,
-    });
+    setViewDetails(props);
+    navigation.navigate('ViewProfile');
   };
   const renderItems = ({ item }: { item: any }) => (
     <SearchProfileSummary

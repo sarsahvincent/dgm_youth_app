@@ -6,27 +6,121 @@ import {
   ScrollView,
   Dimensions,
   Pressable,
+  Alert,
+  ActivityIndicator,
+  TextInput,
 } from 'react-native';
-import React, { useContext } from 'react';
+import {
+  doc,
+  getDoc,
+  updateDoc,
+  getDocs,
+  collection,
+} from 'firebase/firestore';
+import React, { useContext, useState } from 'react';
 import ProfileTabs from './ProfileTabs';
 import ProfileDetails from './ProfileDetails';
 import { FontAwesome, Octicons, Feather } from '@expo/vector-icons';
 import { UserContext } from '../context/AuthContext';
 import { getUserRole } from '../utils/Role';
+import { db } from '../firebase';
+import Modal from 'react-native-modal';
 
 const screenHeight = Dimensions.get('screen').height;
 const ProfileComponent = () => {
-  const { getUserDetails, setUid } = useContext(UserContext);
-  const handleEditProfile = () => {};
+  const { getUserDetails, setUid, uid, setGetUserDetails, setAllUsers } =
+    useContext(UserContext);
+  const [laoding, setLoading] = useState(false);
+  const [dues, setDues] = useState<any>(
+    getUserDetails?.dues ? getUserDetails.dues : 0
+  );
+  const [souls, setSouls] = useState<any>(
+    getUserDetails?.soulsWon ? getUserDetails.soulsWon : 0
+  );
+  const usersCollectiion = collection(db, 'DGM_YOUTH_users');
+  const [isModalVisible, setModalVisible] = useState(false);
+  const toggleModal = () => {
+    setModalVisible(!isModalVisible);
+  };
+
+  const updateProfile = async () => {
+    if (dues === '' || souls === '') {
+      Alert.alert('Alert', 'All fields are required.', [
+        {
+          text: 'Cancel',
+
+          style: 'cancel',
+        },
+        { text: 'OK' },
+      ]);
+    } else if (souls * 0 !== 0 || dues * 0 !== 0) {
+      Alert.alert('Alert', 'Please enter a valid number', [
+        {
+          text: 'Cancel',
+
+          style: 'cancel',
+        },
+        { text: 'OK' },
+      ]);
+    } else if (dues * 1 > 12) {
+      Alert.alert('Alert', 'Monthly Dues can not be more than 12', [
+        {
+          text: 'Cancel',
+
+          style: 'cancel',
+        },
+        { text: 'OK' },
+      ]);
+    } else {
+      setLoading(true);
+      try {
+        await updateDoc(doc(db, 'DGM_YOUTH_users', uid), {
+          dues,
+          soulsWon: souls,
+        });
+
+        const usersData = await getDocs(usersCollectiion);
+        setAllUsers(
+          usersData?.docs.map((doc: any) => ({ ...doc.data(), id: doc.id }))
+        );
+        await getDoc(doc(db, 'DGM_YOUTH_users', uid)).then((docSnap) => {
+          setGetUserDetails(docSnap.data());
+        });
+        setLoading(false);
+        toggleModal();
+      } catch (e) {
+        setLoading(false);
+        Alert.alert('Error', 'Something went wrong. Please try again', [
+          {
+            text: 'Cancel',
+
+            style: 'cancel',
+          },
+          { text: 'OK' },
+        ]);
+      }
+    }
+  };
 
   return (
     <View style={styles.container}>
       <View style={{ backgroundColor: '#E6EFF8', alignItems: 'center' }}>
         <View style={styles.headerContainer}>
           <Text style={styles.headerText}>{getUserDetails.fullName}</Text>
-          <Pressable>
-            <Feather size={20} name='edit-3' color='white' />
-          </Pressable>
+
+          {getUserDetails?.role * 1 !== 0 && (
+            <>
+              {getUserDetails?.role * 1 === 0 ||
+              getUserDetails?.role * 1 === 1 ||
+              getUserDetails?.role * 1 === 2 ||
+              getUserDetails?.role * 1 === 3 ||
+              getUserDetails?.role * 1 === 6 ? (
+                <Pressable onPress={toggleModal}>
+                  <Feather size={20} name='edit-3' color='white' />
+                </Pressable>
+              ) : null}
+            </>
+          )}
           <Pressable
             onPress={() => {
               setUid(null);
@@ -38,7 +132,11 @@ const ProfileComponent = () => {
 
         <Image
           style={styles.image}
-          source={{ uri: `${getUserDetails?.avatar}` }}
+          source={
+            getUserDetails?.avatar
+              ? { uri: `${getUserDetails?.avatar}` }
+              : require('../assets/images/dgm_logo.png')
+          }
         />
 
         <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
@@ -100,6 +198,96 @@ const ProfileComponent = () => {
         />
         <ProfileDetails title='Baptize' value={getUserDetails?.baptism} />
       </ScrollView>
+
+      <Modal backdropOpacity={0.8} isVisible={isModalVisible}>
+        <View style={{ flex: 1 }}>
+          <Text
+            style={{
+              color: 'white',
+              fontWeight: '600',
+              fontSize: 16,
+              textAlign: 'center',
+            }}
+          >
+            EDIT PROFILE
+          </Text>
+          <View>
+            <Text style={{ fontWeight: 'bold', fontSize: 16, color: 'white' }}>
+              Monthly Dues
+            </Text>
+            <TextInput
+              value={dues}
+              onChangeText={(amount) => {
+                setDues(amount);
+              }}
+              style={styles.loginInput}
+              placeholder='Enter number of months paid'
+              keyboardType='number-pad'
+              placeholderTextColor={'white'}
+            />
+            <Text style={{ fontWeight: 'bold', fontSize: 16, color: 'white' }}>
+              Number of Souls Won
+            </Text>
+            <TextInput
+              value={souls}
+              onChangeText={(soul) => {
+                setSouls(soul);
+              }}
+              style={styles.loginInput}
+              placeholder='Enter number of soldiers won'
+              keyboardType='number-pad'
+              placeholderTextColor={'white'}
+            />
+          </View>
+
+          {laoding ? (
+            <ActivityIndicator size='large' color='green' />
+          ) : (
+            <View
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}
+            >
+              <Pressable
+                onPress={updateProfile}
+                style={{
+                  backgroundColor: 'green',
+                  width: 150,
+                  borderRadius: 10,
+                  alignItems: 'center',
+                  height: 40,
+                  justifyContent: 'center',
+                }}
+              >
+                <Text
+                  style={{ fontWeight: 'bold', fontSize: 16, color: 'white' }}
+                >
+                  UPDATE
+                </Text>
+              </Pressable>
+              <Pressable
+                onPress={toggleModal}
+                style={{
+                  backgroundColor: 'red',
+                  width: 150,
+                  borderRadius: 10,
+                  alignItems: 'center',
+                  height: 40,
+                  justifyContent: 'center',
+                }}
+              >
+                <Text
+                  style={{ fontWeight: 'bold', fontSize: 16, color: 'white' }}
+                >
+                  CLOSE
+                </Text>
+              </Pressable>
+            </View>
+          )}
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -138,5 +326,15 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: '600',
     fontSize: 18,
+  },
+  loginInput: {
+    marginBottom: 40,
+    height: 40,
+    width: '100%',
+    borderBottomWidth: 1,
+    borderColor: 'white',
+    marginVertical: 6,
+    fontSize: 16,
+    color: 'white',
   },
 });

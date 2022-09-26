@@ -1,5 +1,4 @@
 import { StyleSheet, Text, View, Dimensions } from 'react-native';
-import React from 'react';
 
 interface Props {
   value: string;
@@ -19,7 +18,7 @@ const FinanceSummaryComponent = (props: Props) => {
             fontSize: 18,
             fontWeight: '600',
             marginBottom: 5,
-            textAlign: 'right'
+            textAlign: 'right',
           }}
         >
           {props.title}
@@ -44,6 +43,6 @@ const styles = StyleSheet.create({
     height: 90,
     backgroundColor: 'purple',
     borderRadius: 10,
-    marginBottom: 5
+    marginBottom: 5,
   },
 });

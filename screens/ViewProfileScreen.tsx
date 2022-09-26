@@ -3,12 +3,10 @@ import { StyleSheet } from 'react-native';
 import ViewProfileComponent from '../components/ViewProfileComponent';
 import { View } from '../components/Themed';
 
-export default function ViewProfileScreen({ route }: { route: any }) {
-  const { info } = route.params;
-
+export default function ViewProfileScreen() {
   return (
     <View style={styles.container}>
-      <ViewProfileComponent data={info} />
+      <ViewProfileComponent />
     </View>
   );
 }

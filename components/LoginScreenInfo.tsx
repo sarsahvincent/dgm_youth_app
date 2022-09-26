@@ -24,7 +24,7 @@ const LoginScreenInfo = () => {
 
   const handleSubmit = async () => {
     if (!email || !password) {
-      Alert.alert('Allert', 'All fields are required.', [
+      Alert.alert('Alert', 'All fields are required.', [
         {
           text: 'Cancel',
 

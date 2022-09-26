@@ -1,4 +1,5 @@
 import React from 'react';
+import { NativeBaseProvider } from 'native-base';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { UserProvider } from './context/AuthContext';
@@ -15,12 +16,14 @@ export default function App() {
     return null;
   } else {
     return (
-      <UserProvider>
-        <SafeAreaProvider>
-          <Navigation colorScheme={colorScheme} />
-          <StatusBar />
-        </SafeAreaProvider>
-      </UserProvider>
+      <NativeBaseProvider>
+        <UserProvider>
+          <SafeAreaProvider>
+            <Navigation colorScheme={colorScheme} />
+            <StatusBar />
+          </SafeAreaProvider>
+        </UserProvider>
+      </NativeBaseProvider>
     );
   }
 }
