@@ -163,7 +163,6 @@ const ViewProfileComponent = () => {
         <ProfileDetails title='Role ' value={getUserRole(data?.role)} />
         <ProfileDetails title='Email ' value={data?.email} />
         <ProfileDetails title='Phone ' value={data?.phone} />
-        <ProfileDetails title='Age ' value={data?.age} />
         <ProfileDetails title='Status ' value={data?.status} />
         <ProfileDetails title='Salutation ' value={data?.salutation} />
         <ProfileDetails title='Gender' value={data?.sex} />

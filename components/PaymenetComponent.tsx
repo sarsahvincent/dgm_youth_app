@@ -41,11 +41,6 @@ const PaymenetComponent = () => {
     setRequestFundsModalVisible(!requestFundsIsModalVisible);
   };
 
-  const [allMonthlyDuesRequested, setAllMonthlyDuesRequested] = useState<any>(
-    []
-  );
-  const [allDonConRequested, setAllDonConRequested] = useState<any>([]);
-
   //HOOKS TO ADD FUNDS
   const [addFundsIsModalVisible, setAddFundsModalVisible] = useState(false);
   const toggleAddFundsModal = () => {
@@ -63,9 +58,6 @@ const PaymenetComponent = () => {
   const [totalDues, setTotalDues] = React.useState<any>(0);
   const [totalDonCont, setTotalDonCon] = React.useState<any>(0);
   const [currentBalance, setCurrentBalance] = React.useState<any>(0);
-  const [allMonthlyDues, setAllMonthlyDues] = React.useState<any>([]);
-  const [allDonationContributions, setAllDonationContributions] =
-    React.useState<any>([]);
 
   const totalDuesCollectiion = collection(
     db,
@@ -76,25 +68,20 @@ const PaymenetComponent = () => {
     'DGM_YOUTH_TotaldonationsContributons'
   );
 
-  const allMonths = collection(db, 'DGM_YOUTH_Funds_monthlyDues');
-
-  const allDonationAndContributions = collection(
-    db,
-    'DGM_YOUTH_Funds_donationsContributons'
-  );
-  const allDonationAndContributionsRequests = collection(
-    db,
-    'DGM_YOUTH_Funds_donationsContributons_request'
-  );
-  const allMonthsRequests = collection(
-    db,
-    'DGM_YOUTH_Funds_monthlyDues_request'
-  );
-
   //FUNCTION TO ADD FUNDS MODAL
 
   const handleAddFunds = async () => {
-    if (amoutToAddfunds === null || amoutToAddfunds <= 0) {
+    if (amoutToAddfunds * 0 !== 0) {
+      Alert.alert('Alert', 'Please enter a valid amount', [
+        {
+          text: 'Cancel',
+
+          style: 'cancel',
+        },
+        { text: 'OK' },
+      ]);
+      return;
+    } else if (amoutToAddfunds === null || amoutToAddfunds <= 0) {
       Alert.alert(
         'Alert',
         'Invalid amout! Amount con not be empty or zero (0).',
@@ -164,23 +151,6 @@ const PaymenetComponent = () => {
           }
         );
       }
-      const data1 = await getDocs(allDonationAndContributions);
-      setAllDonationContributions(
-        data1.docs.map((doc: any) => ({ ...doc.data(), id: doc.id }))
-      );
-      const data2 = await getDocs(allDonationAndContributionsRequests);
-      setAllDonConRequested(
-        data2.docs.map((doc: any) => ({ ...doc.data(), id: doc.id }))
-      );
-      const data3 = await getDocs(allMonths);
-      setAllMonthlyDues(
-        data3.docs.map((doc: any) => ({ ...doc.data(), id: doc.id }))
-      );
-
-      const data4 = await getDocs(allMonthsRequests);
-      setAllMonthlyDuesRequested(
-        data4.docs.map((doc: any) => ({ ...doc.data(), id: doc.id }))
-      );
 
       const data5 = await getDocs(totalDuesCollectiion);
       setTotalDues(
@@ -201,9 +171,9 @@ const PaymenetComponent = () => {
 
       setCurrentBalance(grandTotal);
 
-      setLoading(false);
       setAmoutToAddfunds('');
       setSelectedSource('');
+      setLoading(false);
       Alert.alert('Success', 'Funds Successfully Added.', [
         {
           text: 'Cancel',
@@ -214,12 +184,31 @@ const PaymenetComponent = () => {
       ]);
 
       toggleAddFundsModal();
-    } catch (e) {}
+    } catch (e) {
+      Alert.alert('Error', 'Something went wrong. Please try again', [
+        {
+          text: 'Cancel',
+
+          style: 'cancel',
+        },
+        { text: 'OK' },
+      ]);
+      return;
+    }
   };
 
   //FUNCTION TO REQEUST FOR FUNDS
   const handleRequstFounds = async () => {
-    if (
+    if (requestedAmount * 0 !== 0) {
+      Alert.alert('Alert', 'Please enter a valid amount', [
+        {
+          text: 'Cancel',
+
+          style: 'cancel',
+        },
+        { text: 'OK' },
+      ]);
+    } else if (
       requestedAmount === '' ||
       purposeForRequestedAmount === '' ||
       selectedSource === ''
@@ -232,9 +221,10 @@ const PaymenetComponent = () => {
         },
         { text: 'OK' },
       ]);
+      return;
     } else if (
       requestedAmount * 1 > totalDues * 1 &&
-      selectedSource === 'dues'
+      selectedSource === 'monthlyDues'
     ) {
       Alert.alert(
         'Alert',
@@ -248,9 +238,10 @@ const PaymenetComponent = () => {
           { text: 'OK' },
         ]
       );
+      return;
     } else if (
       requestedAmount * 1 > totalDonCont * 1 &&
-      selectedSource === 'donation/contribution'
+      selectedSource === 'donationsContributons'
     ) {
       Alert.alert(
         'Alert',
@@ -264,22 +255,15 @@ const PaymenetComponent = () => {
           { text: 'OK' },
         ]
       );
+      return;
     } else {
-      const data = {
-        requestedAmount,
-        purposeForRequestedAmount,
-        selectedSource,
-        status: 'pending',
-      };
-
       setLoading(true);
-
       try {
         await setDoc(
           doc(
             db,
             `${
-              selectedSource === 'donation/contribution'
+              selectedSource === 'donationsContributons'
                 ? 'DGM_YOUTH_Funds_donationsContributons_request'
                 : 'DGM_YOUTH_Funds_monthlyDues_request'
             }`,
@@ -297,7 +281,7 @@ const PaymenetComponent = () => {
             picture: getUserDetails?.avatarPath,
           }
         );
-        if (selectedSource === 'donation/contribution') {
+        if (selectedSource === 'donationsContributons') {
           await updateDoc(
             doc(
               db,
@@ -316,24 +300,6 @@ const PaymenetComponent = () => {
             }
           );
         }
-
-        const data1 = await getDocs(allDonationAndContributions);
-        setAllDonationContributions(
-          data1.docs.map((doc: any) => ({ ...doc.data(), id: doc.id }))
-        );
-        const data2 = await getDocs(allDonationAndContributionsRequests);
-        setAllDonConRequested(
-          data2.docs.map((doc: any) => ({ ...doc.data(), id: doc.id }))
-        );
-        const data3 = await getDocs(allMonths);
-        setAllMonthlyDues(
-          data3.docs.map((doc: any) => ({ ...doc.data(), id: doc.id }))
-        );
-
-        const data4 = await getDocs(allMonthsRequests);
-        setAllMonthlyDuesRequested(
-          data4.docs.map((doc: any) => ({ ...doc.data(), id: doc.id }))
-        );
 
         const data5 = await getDocs(totalDuesCollectiion);
         setTotalDues(
@@ -356,10 +322,10 @@ const PaymenetComponent = () => {
             .total;
 
         setCurrentBalance(grandTotal);
-        setPurposeForRequestedAmount('');
         setSelectedSource('');
+        setPurposeForRequestedAmount('');
+        setRequestedAmount('');
         setLoading(false);
-        toggleRequestFundsModal();
         Alert.alert('Success', 'Funds Request Success.', [
           {
             text: 'Cancel',
@@ -368,44 +334,22 @@ const PaymenetComponent = () => {
           },
           { text: 'OK' },
         ]);
-      } catch (e) {}
+        toggleRequestFundsModal();
+      } catch (e) {
+        Alert.alert('Error', 'Something went wrong. Please try again', [
+          {
+            text: 'Cancel',
+
+            style: 'cancel',
+          },
+          { text: 'OK' },
+        ]);
+        return;
+      }
     }
   };
 
   useEffect(() => {
-    const getAllDonationAndContributions = async () => {
-      setLoading(true);
-      const data = await getDocs(allDonationAndContributions);
-      setAllDonationContributions(
-        data.docs.map((doc: any) => ({ ...doc.data(), id: doc.id }))
-      );
-      setLoading(false);
-    };
-    const getAllDonationAndContributionsRequests = async () => {
-      setLoading(true);
-      const data = await getDocs(allDonationAndContributionsRequests);
-      setAllDonConRequested(
-        data.docs.map((doc: any) => ({ ...doc.data(), id: doc.id }))
-      );
-      setLoading(false);
-    };
-    const getAllMonthlyDues = async () => {
-      setLoading(true);
-      const data = await getDocs(allMonths);
-      setAllMonthlyDues(
-        data.docs.map((doc: any) => ({ ...doc.data(), id: doc.id }))
-      );
-      setLoading(false);
-    };
-    const getAllMonthlyDuesRequests = async () => {
-      setLoading(true);
-      const data = await getDocs(allMonthsRequests);
-      setAllMonthlyDuesRequested(
-        data.docs.map((doc: any) => ({ ...doc.data(), id: doc.id }))
-      );
-      setLoading(false);
-    };
-
     const getTotalDuesCollectiion = async () => {
       setLoading(true);
       const data = await getDocs(totalDuesCollectiion);
@@ -438,11 +382,7 @@ const PaymenetComponent = () => {
     getTotalDuesCollectiion();
     getTotalDonCon();
     getTotalFunds();
-    getAllMonthlyDues();
-    getAllDonationAndContributions();
-    getAllMonthlyDuesRequests();
-    getAllDonationAndContributionsRequests();
-  }, [success]);
+  }, []);
   return (
     <View style={styles.container}>
       <View style={styles.historyContainer}>
@@ -525,7 +465,7 @@ const PaymenetComponent = () => {
           </Text>
           <View>
             <Text style={{ fontWeight: 'bold', fontSize: 16, color: 'white' }}>
-              No. of months
+              Amount
             </Text>
             <TextInput
               value={amoutToAddfunds}
@@ -533,36 +473,10 @@ const PaymenetComponent = () => {
                 setAmoutToAddfunds(amount);
               }}
               style={styles.loginInput}
-              placeholder='Enter number of months paid'
-              keyboardType='number-pad'
+              placeholder='Enter amount'
+              keyboardType='numbers-and-punctuation'
               placeholderTextColor={'white'}
             />
-            <Text style={{ fontWeight: 'bold', fontSize: 16, color: 'white' }}>
-              Select source to add funds
-            </Text>
-            <Center>
-              <Box maxW='100%' mt={3}>
-                <Select
-                  color='white'
-                  selectedValue={selectedSource}
-                  minWidth='200'
-                  accessibilityLabel='Choose source'
-                  placeholder='Choose source'
-                  _selectedItem={{
-                    bg: 'teal.600',
-                    endIcon: <CheckIcon size='5' />,
-                  }}
-                  mt={1}
-                  onValueChange={(itemValue) => setSelectedSource(itemValue)}
-                >
-                  <Select.Item label='Monthly Dues' value='monthlyDues' />
-                  <Select.Item
-                    label='Donations / Contributons'
-                    value='donationsContributons'
-                  />
-                </Select>
-              </Box>
-            </Center>
           </View>
 
           {loading ? (
@@ -640,7 +554,7 @@ const PaymenetComponent = () => {
               }}
               style={styles.loginInput}
               placeholder='Enter amount'
-              keyboardType='number-pad'
+              keyboardType='numbers-and-punctuation'
               placeholderTextColor={'white'}
             />
             <Text style={{ fontWeight: 'bold', fontSize: 16, color: 'white' }}>
@@ -652,36 +566,10 @@ const PaymenetComponent = () => {
                 setPurposeForRequestedAmount(text);
               }}
               style={styles.loginInput}
-              placeholder='Enter amount'
+              placeholder='State purpose of the funds'
               keyboardType='default'
               placeholderTextColor={'white'}
             />
-            <Text style={{ fontWeight: 'bold', fontSize: 16, color: 'white' }}>
-              Select source to requst for funds
-            </Text>
-            <Center>
-              <Box maxW='100%' mt={3}>
-                <Select
-                  color='white'
-                  selectedValue={selectedSource}
-                  minWidth='200'
-                  accessibilityLabel='Choose source'
-                  placeholder='Choose source'
-                  _selectedItem={{
-                    bg: 'teal.600',
-                    endIcon: <CheckIcon size='5' />,
-                  }}
-                  mt={1}
-                  onValueChange={(itemValue) => setSelectedSource(itemValue)}
-                >
-                  <Select.Item label='Monthly Dues' value='monthlyDues' />
-                  <Select.Item
-                    label='Donations / Contributons'
-                    value='donationsContributons'
-                  />
-                </Select>
-              </Box>
-            </Center>
           </View>
 
           {loading ? (
@@ -733,6 +621,34 @@ const PaymenetComponent = () => {
           )}
         </View>
       </Modal>
+      <View>
+        <Text style={{ fontWeight: 'bold', fontSize: 16, color: 'purple' }}>
+          Select source to add or request for funds
+        </Text>
+        <Center>
+          <Box maxW='100%' mt={3} mb={10}>
+            <Select
+              color='purple'
+              selectedValue={selectedSource}
+              minWidth='200'
+              accessibilityLabel='Choose source'
+              placeholder='Choose source'
+              _selectedItem={{
+                bg: 'teal.600',
+                endIcon: <CheckIcon size='5' />,
+              }}
+              mt={1}
+              onValueChange={(itemValue) => setSelectedSource(itemValue)}
+            >
+              <Select.Item label='Monthly Dues' value='monthlyDues' />
+              <Select.Item
+                label='Donations / Contributons'
+                value='donationsContributons'
+              />
+            </Select>
+          </Box>
+        </Center>
+      </View>
     </View>
   );
 };

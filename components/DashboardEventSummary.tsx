@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flex: 1,
     width: 250,
-    height: 120,
+    height: 110,
     marginTop: 20,
     widthborderRadius: 10,
     shadowOffset: { width: -2, height: 4 },

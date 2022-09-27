@@ -170,7 +170,6 @@ const ProfileComponent = () => {
         />
         <ProfileDetails title='Email ' value={getUserDetails?.email} />
         <ProfileDetails title='Phone ' value={getUserDetails?.phone} />
-        <ProfileDetails title='Age ' value={getUserDetails?.age} />
         <ProfileDetails title='Status ' value={getUserDetails?.status} />
         <ProfileDetails
           title='Salutation '

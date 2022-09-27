@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flex: 1,
     width: 250,
-    height: 250,
+    height: 235,
     marginTop: 20,
     widthborderRadius: 10,
     shadowOffset: { width: -2, height: 4 },

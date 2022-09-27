@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flex: 1,
     width: 300,
-    height: 190,
+    height: 180,
     marginTop: 20,
     widthborderRadius: 10,
     shadowOffset: { width: -2, height: 4 },
